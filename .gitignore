@@ -1,0 +1,17 @@
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Datos generados
+data_tps/
+
+# Archivos Excel generados
+*.xlsx
+
+# Entorno virtual
+.venv/

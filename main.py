@@ -130,20 +130,24 @@ class App:
         self.entry.delete(0, tk.END)
 
     def export_data(self):
-        codes = self.scan.get_codes()
-
-        total = sum(len(v) for v in codes.values())
+        total = self.scan.count()
 
         if total == 0:
-            self.add_log("[!] No hay datos para exportar")
+            self.add_log("No hay datos para exportar")
             return
 
         try:
-            self.export.export_code(codes)
-            self.add_log(f"[✓] Exportados {total} códigos")
+            filepath = self.export.export_code(self.scan.get_codes())
+
+            self.add_log(f"Exportados {total} códigos")
+            self.add_log(f"Archivo: {filepath}")
+
+            # 🔴 limpieza correcta
+            self.scan.clear()
+            self.add_log("Datos limpiados automáticamente")
 
         except Exception as e:
-            self.add_log(f"[✗] Error al exportar: {str(e)}")
+            self.add_log(f"Error al exportar: {str(e)}")
 
 
 # ---------------- MAIN ---------------- #

@@ -11,7 +11,8 @@ class Export:
     def __init__(self):
         self.name = "TPSD"
         self.creation_date = datetime.now().strftime("%d_%m_%y")
-        self.base_path = Path(__file__).parent
+        self.base_path = Path.home() / "tpsScanner"
+        self.base_path.mkdir(exist_ok=True)
         self.extension = ".xlsx"
         self.file_name = (
             self.base_path / f"{self.name}_{self.creation_date}{self.extension}"

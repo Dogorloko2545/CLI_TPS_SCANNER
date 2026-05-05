@@ -89,6 +89,12 @@ class App:
             side="left", padx=5
         )
 
+        # En build_ui, donde está el frame de acciones
+        self.feedback_label = tk.Label(
+            actions_frame, text="", font=("Arial", 10, "bold"), width=100
+        )
+        self.feedback_label.pack(side="left", padx=10)
+
         # LOG
         log_frame = tk.LabelFrame(main, text="Registro de eventos")
         log_frame.pack(fill="both", expand=True, padx=10, pady=5)
@@ -98,9 +104,9 @@ class App:
 
     # ---------------- LOG ---------------- #
 
-    def add_log(self, message):
+    def add_log(self, message, level="INFO"):
         time = datetime.now().strftime("%H:%M:%S")
-        self.log.insert(tk.END, f"[{time}] {message}")
+        self.log.insert(tk.END, f"[{time}] [{level}] {message}")
         self.log.yview(tk.END)
 
     # ---------------- LÓGICA ---------------- #
@@ -110,22 +116,35 @@ class App:
         self.column_label.config(
             text=f"Columna activa: {self.select.get_active_column()}"
         )
-        self.add_log(f"[>] Cambiado a columna {col}")
+        self.add_log(f"Cambiado a columna: {col}")
+
+    def set_feedback(self, status, code):
+        if status == "added":
+            self.feedback_label.config(
+                text=f"✔ Agregado: {code}", fg="white", bg="#16a34a"  # verde
+            )
+        else:
+            self.feedback_label.config(
+                text=f"✘ Duplicado: {code}", fg="white", bg="#dc2626"  # rojo
+            )
 
     def scan_code(self):
         code = self.entry.get().strip()
-
         if not code:
-            self.add_log("[!] Código vacío ignorado")
             return
 
-        try:
-            self.scan.scan_codes(code, self.select.get_active_column())
+        status, scanned = self.scan.scan_codes(code, self.select.get_active_column())
+        col = self.select.get_active_column()
 
-            self.add_log(f"{code} -> {self.select.get_active_column()}")
-
-        except Exception as e:
-            self.add_log(f"[✗] Error al escanear: {str(e)}")
+        self.set_feedback(status, scanned)
+        self.add_log(
+            (
+                f"Código agregado: {scanned} | Col: {col}"
+                if status == "added"
+                else f"Duplicado: {scanned} | Col: {col}"
+            ),
+            level="INFO" if status == "added" else "WARNING",
+        )
 
         self.entry.delete(0, tk.END)
 
@@ -140,14 +159,14 @@ class App:
             filepath = self.export.export_code(self.scan.get_codes())
 
             self.add_log(f"Exportados {total} códigos")
-            self.add_log(f"Archivo: {filepath}")
+            self.add_log(filepath)
 
             # 🔴 limpieza correcta
             self.scan.clear()
             self.add_log("Datos limpiados automáticamente")
 
         except Exception as e:
-            self.add_log(f"Error al exportar: {str(e)}")
+            self.add_log(f"Error al exportar: {str(e)}", level="WARNING")
 
 
 # ---------------- MAIN ---------------- #

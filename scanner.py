@@ -9,13 +9,14 @@ class Scanner:
         scan = scan[:-1]
         col = columnActive.upper()
 
+        # scanner.py
         if scan not in self.code[col]:
             self.code[col].append(scan)
-            print(f"[+] Codigo agregado -> {scan}")
+            return "added", scan
         else:
-            print("[!] Ya se encuentra capturado!")
+            return "duplicate", scan
 
-    def get_codes(self):
+    def get_codes(self):    
         return self.code
 
     def clear(self):

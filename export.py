@@ -32,6 +32,6 @@ class Export:
 
         df.to_excel(file, index=False, header=False)
 
-        print(f"[x] Archivo guardado en: {file}")
+        return f"Archivo guardado en: {file}"
 
         return file  # 🔴 IMPORTANTE para tu UI
